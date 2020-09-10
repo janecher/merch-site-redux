@@ -5,7 +5,7 @@ function Header(){
     backgroundColor: 'green'
   }
   return (
-    <h1 style={headerStyles}>Help Queue</h1>
+    <h1 style={headerStyles}>Merch Site</h1>
   );
 }
 
