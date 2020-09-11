@@ -17,7 +17,7 @@ function Book(props){
 Book.propTypes = {
   title: PropTypes.string,
   author: PropTypes.string,
-  quantity: PropTypes.string,
+  quantity: PropTypes.number,
   id: PropTypes.string, // new PropType
   whenBookClicked: PropTypes.func // new PropType
 };

@@ -65,7 +65,10 @@ class MerchControl extends React.Component {
   }
 
   handleBookBuyClick = (id) => {
-    const boughtBook = this.state.bookList.filter(book => book.id === id)[0].quantity--; 
+    const boughtBook = this.state.bookList.filter(book => book.id === id)[0]; 
+    if(boughtBook.quantity > 0) {
+      boughtBook.quantity--;
+    }
     const editedBookList = this.state.bookList
       .filter(book => book.id !== id)
       .concat(boughtBook);
@@ -74,7 +77,19 @@ class MerchControl extends React.Component {
         editing: false,
         selectedBook: null
       });
-    console.log(boughtBook);
+  }
+
+  handleBookRestockClick = (id) => {
+    const boughtBook = this.state.bookList.filter(book => book.id === id)[0];
+    boughtBook.quantity++;    
+    const editedBookList = this.state.bookList
+      .filter(book => book.id !== id)
+      .concat(boughtBook);
+    this.setState({
+        bookList: editedBookList,
+        editing: false,
+        selectedBook: null
+      });
   }
 
   render(){
@@ -85,7 +100,7 @@ class MerchControl extends React.Component {
       currentlyVisibleState = <EditBookForm book = {this.state.selectedBook} onEditBook = {this.handleEditingBookInList}/>
       buttonText = "Return to Book List";
     } else if (this.state.selectedBook != null) {
-      currentlyVisibleState = <BookDetail book = {this.state.selectedBook} onClickingDelete = {this.handleDeletingBook} onClickingEdit = {this.handleEditClick} onClickingBuy = {this.handleBookBuyClick}/>
+      currentlyVisibleState = <BookDetail book = {this.state.selectedBook} onClickingDelete = {this.handleDeletingBook} onClickingEdit = {this.handleEditClick} onClickingBuy = {this.handleBookBuyClick} onClickingRestock = {this.handleBookRestockClick}/>
       buttonText = "Return to Book List";
       // While our TicketDetail component only takes placeholder data, we will eventually be passing the value of selectedTicket as a prop.
     }

@@ -12,7 +12,7 @@ function BookList(props){
           whenBookClicked = { props.onBookSelection }
           title={book.title}
           author={book.author}
-          quantity={book.quantity}
+          quantity={parseInt(book.quantity)}
           id={book.id}
           key={book.id}/>
       )}
