@@ -3,6 +3,8 @@ import NewBookForm from './NewBookForm';
 import BookList from './BookList';
 import BookDetail from './BookDetail';
 import EditBookForm from './EditBookForm';
+import { connect } from 'react-redux';
+import PropTypes from "prop-types";
 
 class MerchControl extends React.Component {
 
@@ -10,7 +12,6 @@ class MerchControl extends React.Component {
     super(props);
     this.state = {
       formVisibleOnPage: false,
-      bookList: [],
       selectedBook: null,
       editing: false
     };
@@ -31,20 +32,32 @@ class MerchControl extends React.Component {
   }
 
   handleAddingNewBookToList = (newBook) => {
-    const newBookList = this.state.bookList.concat(newBook);
-    this.setState({bookList: newBookList,
-                  formVisibleOnPage: false });
+    const { dispatch } = this.props;
+    const { title, author, quantity, id } = newBook;
+    const action = {
+      type: 'ADD_BOOK',
+      title: title,
+      author: author,
+      quantity: quantity,
+      id: id 
+    }
+    dispatch(action);
+    this.setState({formVisibleOnPage: false });
   }
 
   handleChangingSelectedBook = (id) => {
-    const selectedBookInList = this.state.bookList.filter(book => book.id === id)[0];
+    const selectedBookInList = this.props.bookList[id];
     this.setState({selectedBook: selectedBookInList});
   }
 
   handleDeletingBook = (id) => {
-    const newBookList = this.state.bookList.filter(book => book.id !== id);
+    const { dispatch } = this.props;
+    const action = {
+      type: 'DELETE_BOOK',
+      id: id
+    }
+    dispatch(action);
     this.setState({
-      bookList: newBookList,
       selectedBook: null
     });
   }
@@ -54,41 +67,59 @@ class MerchControl extends React.Component {
   }
 
   handleEditingBookInList = (bookToEdit) => {
-    const editedBookList = this.state.bookList
-      .filter(book => book.id !== this.state.selectedBook.id)
-      .concat(bookToEdit);
-    this.setState({
-        bookList: editedBookList,
-        editing: false,
-        selectedBook: null
-      });
-  }
-
-  handleBookBuyClick = (id) => {
-    const boughtBook = this.state.bookList.filter(book => book.id === id)[0]; 
-    if(boughtBook.quantity > 0) {
-      boughtBook.quantity--;
+    const { dispatch } = this.props;
+    const { title, author, quantity, id } = bookToEdit;
+    const action = {
+      type: 'ADD_BOOK',
+      title: title,
+      author: author,
+      quantity: quantity,
+      id: id 
     }
-    const editedBookList = this.state.bookList
-      .filter(book => book.id !== id)
-      .concat(boughtBook);
+    dispatch(action);
     this.setState({
-        bookList: editedBookList,
         editing: false,
         selectedBook: null
       });
   }
 
-  handleBookRestockClick = (id) => {
-    const boughtBook = this.state.bookList.filter(book => book.id === id)[0];
-    boughtBook.quantity++;    
-    const editedBookList = this.state.bookList
-      .filter(book => book.id !== id)
-      .concat(boughtBook);
+  handleBookBuyClick = (idToBuy) => {
+    const boughtBook = this.props.bookList[idToBuy]; 
+    console.log(boughtBook);
+    const { dispatch } = this.props;
+    const { title, author, quantity, id } = boughtBook;
+    if(boughtBook.quantity > 0) {
+      boughtBook.quantity = boughtBook.quantity - 1;
+      const action = {
+        type: 'ADD_BOOK',
+        title: title,
+        author: author,
+        quantity: quantity,
+        id: id 
+      }
+      dispatch(action);
+    }
+    console.log(boughtBook);
     this.setState({
-        bookList: editedBookList,
-        editing: false,
-        selectedBook: null
+        editing: false
+      });
+  }
+
+  handleBookRestockClick = (idToRestock) => {
+    const boughtBook = this.props.bookList[idToRestock]; 
+    const { dispatch } = this.props;
+    const { title, author, quantity, id } = boughtBook;
+    boughtBook.quantity++;
+    const action = {
+      type: 'ADD_BOOK',
+      title: title,
+      author: author,
+      quantity: quantity,
+      id: id 
+    }
+    dispatch(action);
+    this.setState({
+        editing: false
       });
   }
 
@@ -109,7 +140,7 @@ class MerchControl extends React.Component {
       currentlyVisibleState = <NewBookForm onNewBookCreation={this.handleAddingNewBookToList}  />;
       buttonText = "Return to Book List";
     } else {
-      currentlyVisibleState = <BookList bookList={this.state.bookList} onBookSelection={this.handleChangingSelectedBook} />;
+      currentlyVisibleState = <BookList bookList={this.props.bookList} onBookSelection={this.handleChangingSelectedBook} />;
       // Because a user will actually be clicking on the ticket in the Ticket component, we will need to pass our new handleChangingSelectedTicket method as a prop.
       buttonText = "Add Book";
     }
@@ -122,5 +153,17 @@ class MerchControl extends React.Component {
   }
 
 }
+
+MerchControl.propTypes = {
+  bookList: PropTypes.object
+};
+
+const mapStateToProps = state => {
+  return {
+    bookList: state
+  }
+}
+
+MerchControl = connect(mapStateToProps)(MerchControl);
 
 export default MerchControl;

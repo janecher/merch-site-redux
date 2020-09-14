@@ -10,7 +10,7 @@ function BookDetail(props){
       <h3>{book.title} - {book.author}</h3>
       <p><em>{book.quantity}</em></p>
       <button onClick={() => onClickingBuy(book.id)}>Buy This Book</button>
-      <button onClick={() => onClickingRestock(book.id)}>Restock</button>
+      <button onClick={() => onClickingRestock(book.id)}>Restock</button> 
       <button onClick={() => onClickingEdit()}>Update Book</button>
       <button onClick={() => onClickingDelete(book.id) }>Delete Book</button>
       <hr/>
